@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid';
 import { ContactForm } from './ContactForm/ContactForm';
 import { Filter } from './Filter/Filter';
 import { ContactList } from './ContactList/ContactList';
+import Notiflix from 'notiflix';
 
 export class App extends Component {
   state = {
@@ -13,13 +14,13 @@ export class App extends Component {
       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
     filter: '',
-    name: '',
-    number: '',
   };
 
   handleChange = e => {
     const { name, value } = e.target;
-    this.setState({ [name]: value });
+    this.setState({
+      [name]: value,
+    });
   };
 
   handleSubmit = e => {
@@ -28,7 +29,11 @@ export class App extends Component {
     const number = e.number;
     const contactsLists = [...this.state.contacts];
 
-    if (contactsLists.findIndex(contact => name === contact.name) !== -1) {
+    if (
+      contactsLists.findIndex(
+        contact => contact.name.toLowerCase() === name.toLowerCase()
+      ) !== -1
+    ) {
       alert(`${name} is already in contacts.`);
     } else {
       contactsLists.push({ name, id, number });
@@ -37,12 +42,11 @@ export class App extends Component {
     this.setState({ contacts: contactsLists });
   };
 
-  handleDelete = e => {
+  handleDelete = contactId => {
     this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== e),
+      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
     }));
   };
-
   getFilteredContacts = () => {
     const filterContactsList = this.state.contacts.filter(contact => {
       return contact.name
